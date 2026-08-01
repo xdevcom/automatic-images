@@ -30,7 +30,7 @@ Push to `main` and GitHub Actions will build and publish the images to GitHub Co
 ## Folder structure
 
 ```text
-docker-images/
+automatic-images/
 ├── README.md
 ├── .gitignore
 ├── node22-playwright/
@@ -39,7 +39,10 @@ docker-images/
 ├── python312-playwright/
 │   ├── Dockerfile
 │   └── README.md
-└── .github/
-    └── workflows/
-        ├── node22-playwright.yml
-        └── python312-playwright.yml
+├── .github/
+│   └── workflows/
+│       ├── node22-playwright.yml
+│       └── python312-playwright.yml
+└── eggs/
+    ├── egg-node-xdevcom.json
+    └── egg-python-xdevcom.json
