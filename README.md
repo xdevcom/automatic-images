@@ -45,4 +45,5 @@ automatic-images/
 │       └── python312-playwright.yml
 └── eggs/
     ├── egg-node-xdevcom.json
-    └── egg-python-xdevcom.json
+    ├── egg-python-xdevcom.json
+    └── README.md
