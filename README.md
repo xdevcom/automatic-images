@@ -1,13 +1,13 @@
-# Docker Images for Pterodactyl
+# Automatic Images
 
-Repository for custom Docker images used with Pterodactyl servers.
+Production-ready Docker images for Pterodactyl automation projects.
 
 ## Images
 
-- `ghcr.io/<your-github-username>/node22-playwright:latest`
-- `ghcr.io/<your-github-username>/node22-playwright:1.62`
-- `ghcr.io/<your-github-username>/python312-playwright:latest`
-- `ghcr.io/<your-github-username>/python312-playwright:1.61`
+- `ghcr.io/xdevcom/node22-playwright:latest`
+- `ghcr.io/xdevcom/node22-playwright:1.62`
+- `ghcr.io/xdevcom/python312-playwright:latest`
+- `ghcr.io/xdevcom/python312-playwright:1.61`
 
 ## Included
 
@@ -43,4 +43,3 @@ docker-images/
     └── workflows/
         ├── node22-playwright.yml
         └── python312-playwright.yml
-```
