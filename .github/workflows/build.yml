@@ -1,0 +1,72 @@
+name: Build Playwright Image
+
+on:
+  workflow_dispatch:
+    inputs:
+      playwright_version:
+        description: "Playwright version to bake in, e.g. 1.62.0"
+        required: true
+      latest:
+        description: "Also tag as :latest"
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compute tags
+        id: tags
+        run: |
+          IMAGE="ghcr.io/xdevcom/python312-playwright"
+          TAGS="$IMAGE:${{ inputs.playwright_version }}"
+          if [ "${{ inputs.latest }}" = "true" ]; then
+            TAGS="$(printf '%s\n%s' "$TAGS" "$IMAGE:latest")"
+          fi
+          {
+            echo "tags<<EOF"
+            echo "$TAGS"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      # load: true puts the image in the local Docker daemon instead of
+      # pushing, so we can test it before anyone else can pull it.
+      - name: Build (local only)
+        uses: docker/build-push-action@v6
+        with:
+          context: python312-playwright
+          build-args: |
+            PLAYWRIGHT_VERSION=${{ inputs.playwright_version }}
+          load: true
+          push: false
+          tags: ${{ steps.tags.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # Fails the workflow here, before push, if Chromium can't launch —
+      # a broken image never reaches GHCR.
+      - name: Smoke test
+        run: |
+          docker run --rm -i \
+            "ghcr.io/xdevcom/python312-playwright:${{ inputs.playwright_version }}" \
+            python3 - < python312-playwright/smoke_test.py
+
+      # Image already built and tagged locally above — push, don't rebuild.
+      - name: Push
+        run: |
+          echo "${{ steps.tags.outputs.tags }}" | while read -r tag; do
+            [ -n "$tag" ] && docker push "$tag"
+          done
